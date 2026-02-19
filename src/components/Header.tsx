@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingCart, Menu, X, Search, User } from "lucide-react";
+import { ShoppingCart, Menu, X, Search, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/logo.jpeg";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
+  const { user, signOut } = useAuth();
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -20,7 +22,6 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-3">
           <img src={logo} alt="Kaafi Online Market" className="h-10 w-10 rounded-full object-cover" />
           <span className="hidden font-bold text-lg sm:inline-block">
@@ -28,7 +29,6 @@ const Header = () => {
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link
@@ -41,14 +41,23 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Actions */}
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="hidden sm:flex">
             <Search className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon">
-            <User className="h-5 w-5" />
-          </Button>
+
+          {user ? (
+            <Button variant="ghost" size="icon" onClick={signOut} title="Sign Out">
+              <LogOut className="h-5 w-5" />
+            </Button>
+          ) : (
+            <Button variant="ghost" size="icon" asChild>
+              <Link to="/auth">
+                <User className="h-5 w-5" />
+              </Link>
+            </Button>
+          )}
+
           <Button
             variant="ghost"
             size="icon"
@@ -73,7 +82,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden border-t border-border animate-fade-in">
           <nav className="container py-4 flex flex-col gap-2">
@@ -87,6 +95,15 @@ const Header = () => {
                 {link.name}
               </Link>
             ))}
+            {!user && (
+              <Link
+                to="/auth"
+                className="px-4 py-2 text-sm font-medium text-primary hover:bg-accent rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+            )}
           </nav>
         </div>
       )}
