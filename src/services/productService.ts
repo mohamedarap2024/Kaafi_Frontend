@@ -21,4 +21,33 @@ export const productService = {
   getCategories: async (): Promise<Category[]> => {
     return api<Category[]>("/categories");
   },
+  // Admin: create a product (requires auth/admin)
+  create: async (data: {
+    name: string;
+    description?: string;
+    price: number;
+    category?: string;
+    countInStock?: number;
+    image?: string;
+  }) => {
+    return api<{ _id: string }>("/products", {
+      method: "POST",
+      body: data,
+    });
+  },
+
+  // Admin: update a product
+  update: async (id: string, data: Partial<{ name: string; description: string; price: number; category: string; countInStock: number; image: string }>) => {
+    return api(`/products/${id}`, {
+      method: "PUT",
+      body: data,
+    });
+  },
+
+  // Admin: delete a product
+  remove: async (id: string) => {
+    return api(`/products/${id}`, {
+      method: "DELETE",
+    });
+  },
 };
