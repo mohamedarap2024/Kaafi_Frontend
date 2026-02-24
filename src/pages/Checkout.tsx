@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { orderService } from "@/services/orderService";
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -26,39 +26,18 @@ const Checkout = () => {
     e.preventDefault();
     setSubmitting(true);
 
-    const { data: order, error: orderError } = await supabase
-      .from("orders")
-      .insert({
-        user_id: user.id,
+    try {
+      await orderService.create({
+        items,
         total: totalPrice,
-        shipping_address: address,
+        shippingAddress: address,
         phone,
-      })
-      .select()
-      .single();
-
-    if (orderError || !order) {
-      toast({ title: "Order failed", description: orderError?.message, variant: "destructive" });
-      setSubmitting(false);
-      return;
-    }
-
-    const orderItems = items.map((item) => ({
-      order_id: order.id,
-      product_id: item.id,
-      product_name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-    }));
-
-    const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
-
-    if (itemsError) {
-      toast({ title: "Order items failed", description: itemsError.message, variant: "destructive" });
-    } else {
+      });
       clearCart();
       toast({ title: "Order placed!", description: "Your order has been confirmed." });
       navigate("/");
+    } catch (err: any) {
+      toast({ title: "Order failed", description: err.message, variant: "destructive" });
     }
     setSubmitting(false);
   };
@@ -69,7 +48,6 @@ const Checkout = () => {
         <h1 className="text-3xl font-bold mb-8">Checkout</h1>
 
         <form onSubmit={handleOrder} className="space-y-6">
-          {/* Order Summary */}
           <div className="bg-card rounded-2xl p-6 shadow-soft space-y-4">
             <h2 className="font-semibold text-lg">Order Summary</h2>
             {items.map((item) => (
@@ -84,7 +62,6 @@ const Checkout = () => {
             </div>
           </div>
 
-          {/* Shipping Info */}
           <div className="bg-card rounded-2xl p-6 shadow-soft space-y-4">
             <h2 className="font-semibold text-lg">Shipping Details</h2>
             <div className="space-y-2">
