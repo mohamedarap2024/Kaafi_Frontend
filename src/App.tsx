@@ -39,11 +39,6 @@ const App = () => (
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/auth" element={<Auth />} />
-                  <Route path="/admin" element={<Admin />} />
-                  {/* Accept capitalized path users might try manually */}
-                  <Route path="/Admin" element={<Navigate to="/admin" replace />} />
-                  {/* Unguarded test page to verify admin UI/API */}
-                  <Route path="/admin-test" element={<AdminTest />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
