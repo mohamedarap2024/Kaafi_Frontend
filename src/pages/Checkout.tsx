@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { orderService } from "@/services/orderService";
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -25,21 +24,13 @@ const Checkout = () => {
   const handleOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-
-    try {
-      await orderService.create({
-        items,
-        total: totalPrice,
-        shippingAddress: address,
-        phone,
-      });
+    // Frontend-only: simulate order
+    setTimeout(() => {
       clearCart();
       toast({ title: "Order placed!", description: "Your order has been confirmed." });
       navigate("/");
-    } catch (err: any) {
-      toast({ title: "Order failed", description: err.message, variant: "destructive" });
-    }
-    setSubmitting(false);
+      setSubmitting(false);
+    }, 1000);
   };
 
   return (

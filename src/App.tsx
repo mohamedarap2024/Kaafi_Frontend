@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/hooks/useAuth";
-// NOTE: Supabase imports removed — frontend now uses REST API via src/services/
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartSidebar from "@/components/CartSidebar";
@@ -18,8 +17,6 @@ import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
-import Admin from "./pages/Admin";
-import AdminTest from "./pages/AdminTest";
 
 const queryClient = new QueryClient();
 
@@ -42,11 +39,6 @@ const App = () => (
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/auth" element={<Auth />} />
-                  <Route path="/admin" element={<Admin />} />
-                  {/* Accept capitalized path users might try manually */}
-                  <Route path="/Admin" element={<Navigate to="/admin" replace />} />
-                  {/* Unguarded test page to verify admin UI/API */}
-                  <Route path="/admin-test" element={<AdminTest />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
