@@ -17,6 +17,10 @@ import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminCategories from "./pages/admin/AdminCategories";
 
 const queryClient = new QueryClient();
 
