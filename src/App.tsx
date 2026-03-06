@@ -50,6 +50,16 @@ const App = () => (
               <Footer />
               <CartSidebar />
             </div>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="categories" element={<AdminCategories />} />
+            </Route>
+                </Routes>
+              </main>
+              <Footer />
+              <CartSidebar />
+            </div>
           </BrowserRouter>
         </CartProvider>
       </AuthProvider>
