@@ -1,3 +1,19 @@
+# Kaafi Online Market – Frontend
+
+React (Vite) + TypeScript. Connects to Kaafi backend API.
+
+## Quick start
+
+```sh
+cp .env.example .env   # set VITE_API_URL=http://localhost:5199/api
+npm i
+npm run dev
+```
+
+Backend repo: [kaafi-backend](https://github.com/mohamedarap2024/kaafi-backend).
+
+---
+
 # Welcome to your Lovable project
 
 ## Project info
