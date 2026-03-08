@@ -1,13 +1,46 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Hero from "@/components/Hero";
 import ProductCard from "@/components/ProductCard";
 import CategoryCard from "@/components/CategoryCard";
-import { products, categories } from "@/data/products";
+import { products as staticProducts, categories as staticCategories } from "@/data/products";
+import { productsApi, categoriesApi } from "@/lib/api";
+import type { Product, Category } from "@/types/product";
+
+function mapCategory(d: { id: number; name: string }) {
+  return { id: String(d.id), name: d.name, icon: "📦", productCount: 0 };
+}
+function mapProduct(d: { id: number; name: string; description?: string | null; price: number; imageUrl?: string | null; stockQuantity: number; categoryName?: string | null }) {
+  return {
+    id: String(d.id),
+    name: d.name,
+    description: d.description ?? "",
+    price: Number(d.price),
+    image: d.imageUrl ?? "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+    category: d.categoryName ?? "",
+    inStock: d.stockQuantity > 0,
+    rating: 0,
+    reviewCount: 0,
+  };
+}
 
 const Index = () => {
+  const [categories, setCategories] = useState<Category[]>(staticCategories);
+  const [products, setProducts] = useState<Product[]>(staticProducts);
+
+  useEffect(() => {
+    Promise.all([categoriesApi.getAll(), productsApi.getAll()])
+      .then(([cats, prods]) => {
+        setCategories(cats.map(mapCategory));
+        setProducts(prods.map(mapProduct));
+      })
+      .catch(() => {});
+  }, []);
+
   const featuredProducts = products.slice(0, 4);
+  const newArrivals = products.slice(4, 8);
 
   return (
     <div className="min-h-screen">
@@ -105,7 +138,7 @@ const Index = () => {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.slice(4, 8).map((product, index) => (
+            {newArrivals.map((product, index) => (
               <div
                 key={product.id}
                 className="animate-fade-in"
