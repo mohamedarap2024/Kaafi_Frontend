@@ -1,25 +1,55 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ProductCard from "@/components/ProductCard";
-import { products, categories } from "@/data/products";
+import { products as staticProducts, categories as staticCategories } from "@/data/products";
+import { productsApi, categoriesApi, type ProductDto, type CategoryDto } from "@/lib/api";
+import type { Product, Category } from "@/types/product";
+
+function mapDtoToProduct(d: ProductDto): Product {
+  return {
+    id: String(d.id),
+    name: d.name,
+    description: d.description ?? "",
+    price: Number(d.price),
+    image: d.imageUrl ?? "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+    category: d.categoryName ?? "",
+    inStock: d.stockQuantity > 0,
+    rating: 0,
+    reviewCount: 0,
+  };
+}
+function mapDtoToCategory(d: CategoryDto): Category {
+  return { id: String(d.id), name: d.name, icon: "📦", productCount: 0 };
+}
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [products, setProducts] = useState<Product[]>(staticProducts);
+  const [categories, setCategories] = useState<Category[]>(staticCategories);
+  const [apiLoaded, setApiLoaded] = useState(false);
+
+  useEffect(() => {
+    Promise.all([productsApi.getAll(), categoriesApi.getAll()])
+      .then(([prods, cats]) => {
+        setProducts(prods.map(mapDtoToProduct));
+        setCategories(cats.map(mapDtoToCategory));
+        setApiLoaded(true);
+      })
+      .catch(() => setApiLoaded(true));
+  }, []);
 
   const selectedCategory = searchParams.get("category") || "All";
 
   const filteredProducts = useMemo(() => {
     let filtered = products;
-
     if (selectedCategory !== "All") {
       filtered = filtered.filter((p) => p.category === selectedCategory);
     }
-
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -28,9 +58,8 @@ const Products = () => {
           p.description.toLowerCase().includes(query)
       );
     }
-
     return filtered;
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory, searchQuery, products]);
 
   const handleCategoryChange = (category: string) => {
     if (category === "All") {

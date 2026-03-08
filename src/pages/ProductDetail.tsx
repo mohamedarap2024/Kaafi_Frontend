@@ -1,16 +1,61 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ChevronLeft, ShoppingCart, Star, Truck, Shield, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/ProductCard";
-import { products } from "@/data/products";
+import { products as staticProducts } from "@/data/products";
+import { productsApi } from "@/lib/api";
+import type { Product } from "@/types/product";
 import { useCart } from "@/context/CartContext";
+
+function dtoToProduct(d: { id: number; name: string; description?: string | null; price: number; imageUrl?: string | null; stockQuantity: number; categoryName?: string | null }): Product {
+  return {
+    id: String(d.id),
+    name: d.name,
+    description: d.description ?? "",
+    price: Number(d.price),
+    image: d.imageUrl ?? "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+    category: d.categoryName ?? "",
+    inStock: d.stockQuantity > 0,
+    rating: 0,
+    reviewCount: 0,
+  };
+}
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const product = products.find((p) => p.id === id);
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+    const numId = Number(id);
+    if (Number.isInteger(numId)) {
+      productsApi.getById(numId).then((d) => {
+        setProduct(dtoToProduct(d));
+        setLoading(false);
+      }).catch(() => {
+        const fallback = staticProducts.find((p) => p.id === id);
+        setProduct(fallback ?? null);
+        setLoading(false);
+      });
+    } else {
+      setProduct(staticProducts.find((p) => p.id === id) ?? null);
+      setLoading(false);
+    }
+  }, [id]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -24,7 +69,7 @@ const ProductDetail = () => {
     );
   }
 
-  const relatedProducts = products
+  const relatedProducts = staticProducts
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 

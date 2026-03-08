@@ -17,6 +17,7 @@ import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import { ProtectedAdminRoute } from "@/components/ProtectedAdminRoute";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
@@ -33,8 +34,8 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Admin routes - no header/footer */}
-              <Route path="/admin" element={<AdminLayout />}>
+              {/* Admin routes - no header/footer, admin only */}
+              <Route path="/admin" element={<ProtectedAdminRoute><AdminLayout /></ProtectedAdminRoute>}>
                 <Route index element={<AdminDashboard />} />
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="categories" element={<AdminCategories />} />

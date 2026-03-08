@@ -39,6 +39,14 @@ const Header = () => {
               {link.name}
             </Link>
           ))}
+          {user?.isAdmin && (
+            <Link
+              to="/admin"
+              className="text-sm font-medium text-primary"
+            >
+              Dashboard
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -95,6 +103,15 @@ const Header = () => {
                 {link.name}
               </Link>
             ))}
+            {user?.isAdmin && (
+              <Link
+                to="/admin"
+                className="px-4 py-2 text-sm font-medium text-primary hover:bg-accent rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+            )}
             {!user && (
               <Link
                 to="/auth"

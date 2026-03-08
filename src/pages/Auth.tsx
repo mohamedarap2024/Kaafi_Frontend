@@ -27,14 +27,14 @@ const Auth = () => {
     if (isLogin) {
       const { error } = await signIn(email, password);
       if (error) {
-        toast({ title: "Login failed", description: error.message, variant: "destructive" });
+        toast({ title: "Login failed", description: error, variant: "destructive" });
       } else {
         toast({ title: "Welcome back!" });
       }
     } else {
       const { error } = await signUp(email, password, fullName);
       if (error) {
-        toast({ title: "Signup failed", description: error.message, variant: "destructive" });
+        toast({ title: "Signup failed", description: error, variant: "destructive" });
       } else {
         toast({ title: "Account created!", description: "You are now signed in." });
       }
